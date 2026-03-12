@@ -72,10 +72,17 @@ All colors and sizing are managed through CSS custom properties (`:root` variabl
 
 Spouses are offset to either side of the midpoint angle. Layout parameters (`--ring-gap`, `--ring-min-radius`, `--node-w`, `--node-h`) are configurable via CSS variables.
 
+## Kinship Terms (Xưng Hô)
+
+Select a person, click "Xưng hô", then click a second person to see how they address each other in Vietnamese. Supports:
+
+- Direct lineage: Cha/Mẹ, Ông/Bà (nội/ngoại), Cụ, Kỵ
+- Siblings: Anh/Chị/Em (by age)
+- Uncle/Aunt: Bác/Chú/Cô (paternal), Cậu/Dì (maternal)
+- Cousins: Anh/Chị/Em họ
+- Spouse: Vợ/Chồng
+- In-law: Con dâu/rể, Cha/Mẹ chồng/vợ, etc.
+
 ## Browser Support
 
 Works in all modern browsers (Chrome, Firefox, Safari, Edge). No external dependencies — fonts are loaded from Google Fonts.
-
-## License
-
-Private project.
