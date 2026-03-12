@@ -18,7 +18,7 @@ A single-file HTML application that displays family trees in a radial (concentri
 
 ## Getting Started
 
-Open `radial.html` in any modern browser. No build tools or server required.
+Open `index.html` in any modern browser, or visit the [Live Demo](https://mancmit.github.io/family-tree). No build tools or server required.
 
 On the welcome screen you can:
 1. Enter a family name and start a new tree
