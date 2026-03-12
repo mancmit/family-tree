@@ -1,0 +1,2468 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gia Phả - Radial (Vintage)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ========== RESET & VARIABLES ========== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-main: #F5EDE0;
+      --bg-card: rgba(255,249,240,0.92);
+      --bg-header: #4E342E;
+      --text-primary: #2C1810;
+      --text-secondary: #5D4037;
+      --text-light: #8D6E63;
+      --accent: #6D4C41;
+      --accent-light: #8D6E63;
+      --gold: #C9A96E;
+      --gold-light: #E8D5B0;
+      --male: #5B7B8A;
+      --female: #A0616A;
+      --border: #E0D5CA;
+      --shadow: rgba(44,24,16,0.08);
+      --hover-bg: #FFF8F0;
+      --danger: #C0392B;
+      --conn-color: rgba(109,76,65,0.35);
+      --conn-spouse: #C9A96E;
+      --glow-gold: rgba(201,169,110,0.3);
+      --glow-blue: rgba(91,123,138,0.3);
+      --glow-coral: rgba(160,97,106,0.3);
+      --glass-bg: rgba(255,249,240,0.85);
+      --glass-border: rgba(201,169,110,0.3);
+      --node-w: 100px;
+      --node-h: 125px;
+      --circle-size: 60px;
+      --spouse-gap: 40px;
+      --ring-gap: 200px;
+      --ring-min-radius: 120px;
+      --panel-w: 360px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Roboto', sans-serif;
+      background: var(--bg-main);
+      color: var(--text-primary);
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+    /* ========== PARTICLES ========== */
+    .particles {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+    }
+    .particles span {
+      position: absolute;
+      display: block;
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0;
+      animation: floatParticle 12s ease-in-out infinite;
+    }
+    @keyframes floatParticle {
+      0%   { transform: translateY(0) scale(1); opacity: 0; }
+      10%  { opacity: 0.2; }
+      50%  { opacity: 0.08; }
+      90%  { opacity: 0.15; }
+      100% { transform: translateY(-120px) scale(0.5); opacity: 0; }
+    }
+
+    /* ========== WELCOME SCREEN ========== */
+    #welcome {
+      position: fixed; inset: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(ellipse at 50% 50%, #F5EDE0 0%, #E8DDD0 70%);
+      transition: opacity 0.5s, visibility 0.5s;
+    }
+    #welcome.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+
+    .welcome-box {
+      text-align: center; padding: 48px 36px;
+      background: rgba(255,249,240,0.95);
+      border: 2px solid var(--gold);
+      border-radius: 20px;
+      box-shadow:
+        0 0 0 1px var(--gold-light),
+        0 0 40px rgba(201,169,110,0.15),
+        0 8px 32px var(--shadow),
+        inset 0 0 60px rgba(201,169,110,0.05);
+      max-width: 440px; width: 90%;
+      position: relative;
+    }
+    /* Ornate corner decorations for welcome box */
+    .welcome-box::before,
+    .welcome-box::after {
+      content: '';
+      position: absolute;
+      width: 40px; height: 40px;
+      border: 2px solid var(--gold);
+      opacity: 0.5;
+    }
+    .welcome-box::before {
+      top: 8px; left: 8px;
+      border-right: none; border-bottom: none;
+      border-radius: 4px 0 0 0;
+    }
+    .welcome-box::after {
+      bottom: 8px; right: 8px;
+      border-left: none; border-top: none;
+      border-radius: 0 0 4px 0;
+    }
+    .welcome-box h1 {
+      font-size: 28px; color: var(--accent);
+      margin-bottom: 8px;
+      text-shadow: 0 1px 2px rgba(44,24,16,0.1);
+    }
+    .welcome-box p {
+      color: var(--text-secondary); margin-bottom: 24px; font-size: 15px;
+    }
+    .welcome-box input {
+      width: 100%; padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 16px;
+      font-family: 'Playfair Display', serif;
+      text-align: center;
+      background: rgba(255,255,255,0.6);
+      color: var(--text-primary);
+      outline: none;
+      margin-bottom: 16px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .welcome-box input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 12px rgba(201,169,110,0.25);
+    }
+    .welcome-box input::placeholder { color: var(--text-light); }
+
+    .welcome-actions { display: flex; flex-direction: column; gap: 10px; }
+
+    .btn {
+      padding: 12px 24px; border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 500; cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #5D4037 100%);
+      color: #FFF9F0;
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      box-shadow: 0 4px 20px rgba(109,76,65,0.3);
+      transform: translateY(-1px);
+    }
+    .btn-secondary {
+      background: transparent; color: var(--accent);
+      border: 1.5px solid var(--border);
+    }
+    .btn-secondary:hover {
+      background: var(--hover-bg);
+      border-color: var(--gold);
+    }
+    .btn-danger {
+      background: transparent; color: var(--danger);
+      border: 1.5px solid rgba(192,57,43,0.3);
+    }
+    .btn-danger:hover {
+      background: rgba(192,57,43,0.06);
+      box-shadow: 0 0 12px rgba(192,57,43,0.15);
+    }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+
+    /* ========== APP LAYOUT ========== */
+    #app {
+      display: flex; flex-direction: column;
+      height: 100vh; width: 100vw;
+    }
+
+    /* ========== HEADER ========== */
+    #header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 0 20px; height: 56px; min-height: 56px;
+      background: var(--bg-header);
+      color: #FFF9F0;
+      border-bottom: 1px solid rgba(201,169,110,0.3);
+      box-shadow: 0 2px 16px rgba(44,24,16,0.15);
+      z-index: 100;
+    }
+    #header h1 {
+      font-size: 18px; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      flex: 1;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .header-search {
+      position: relative; max-width: 240px;
+    }
+    .header-search input {
+      width: 180px; padding: 7px 12px 7px 32px;
+      border: 1px solid rgba(201,169,110,0.3);
+      border-radius: 20px; font-size: 13px;
+      background: rgba(255,249,240,0.1);
+      color: #FFF9F0; outline: none;
+      transition: all 0.2s;
+    }
+    .header-search input:focus {
+      width: 220px;
+      background: rgba(255,249,240,0.15);
+      border-color: var(--gold);
+      box-shadow: 0 0 10px rgba(201,169,110,0.2);
+    }
+    .header-search input::placeholder { color: rgba(232,213,176,0.5); }
+    .header-search svg {
+      position: absolute; left: 10px; top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      fill: rgba(232,213,176,0.5);
+    }
+    .search-results {
+      position: absolute; top: 100%; left: 0; right: 0;
+      background: rgba(255,249,240,0.97);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 4px 20px var(--shadow);
+      margin-top: 4px; overflow: hidden;
+      display: none; z-index: 200;
+    }
+    .search-results.show { display: block; }
+    .search-item {
+      padding: 10px 14px; cursor: pointer;
+      color: var(--text-primary); font-size: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .search-item:last-child { border-bottom: none; }
+    .search-item:hover { background: var(--hover-bg); }
+    .search-item small { color: var(--text-light); }
+
+    .header-btn {
+      background: none; border: none; cursor: pointer;
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s; position: relative;
+    }
+    .header-btn:hover { background: rgba(201,169,110,0.2); }
+    .header-btn svg { width: 20px; height: 20px; fill: var(--gold-light); }
+
+    /* ========== MENU DROPDOWN ========== */
+    #menu {
+      position: absolute; top: 52px; right: 16px;
+      background: rgba(255,249,240,0.97);
+      border-radius: 10px;
+      box-shadow: 0 4px 24px var(--shadow);
+      min-width: 200px; z-index: 300;
+      border: 1px solid var(--border);
+      display: none; overflow: hidden;
+    }
+    #menu.show { display: block; }
+    .menu-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 16px; cursor: pointer;
+      font-size: 14px; color: var(--text-primary);
+      border: none; background: none; width: 100%; text-align: left;
+    }
+    .menu-item:hover { background: var(--hover-bg); }
+    .menu-sep { height: 1px; background: var(--border); margin: 4px 0; }
+
+    /* ========== TREE AREA ========== */
+    #tree-area {
+      flex: 1; position: relative; overflow: hidden;
+      cursor: grab;
+      background: var(--bg-main);
+    }
+    /* Paper grain texture overlay */
+    #tree-area::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(rgba(109,76,65,0.03) 1px, transparent 1px),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      background-size: 30px 30px, 256px 256px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* Vignette effect */
+    #tree-area::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(78,52,46,0.08) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    #tree-area.grabbing { cursor: grabbing; }
+    #tree-area.panel-open { margin-right: var(--panel-w); }
+
+    #tree-viewport {
+      position: absolute; top: 0; left: 0;
+      transform-origin: 0 0;
+      will-change: transform;
+      z-index: 1;
+    }
+
+    /* Connection lines */
+    #tree-viewport svg.connections {
+      position: absolute; top: 0; left: 0;
+      pointer-events: visiblePainted; overflow: visible;
+      transition: opacity 0.4s ease;
+    }
+    #tree-viewport svg.connections * {
+      pointer-events: none;
+    }
+    #tree-viewport svg.connections .gen-ring-hover {
+      pointer-events: stroke;
+    }
+    .conn-line {
+      stroke: var(--conn-color);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+    .conn-dot {
+      fill: var(--gold);
+      stroke: rgba(245,237,224,0.9);
+      stroke-width: 1.5;
+      filter: drop-shadow(0 0 2px rgba(201,169,110,0.3));
+      animation: pulseDot 3s ease-in-out infinite;
+    }
+    @keyframes pulseDot {
+      0%, 100% { r: 2.5; opacity: 0.7; }
+      50% { r: 3.5; opacity: 1; }
+    }
+    .conn-spouse {
+      stroke: var(--conn-spouse);
+      stroke-width: 2;
+      stroke-linecap: round;
+      filter: drop-shadow(0 0 3px rgba(201,169,110,0.25));
+    }
+    .conn-heart {
+      fill: var(--conn-spouse);
+      font-size: 11px;
+      filter: drop-shadow(0 0 3px rgba(201,169,110,0.4));
+      animation: heartBeat 2s ease-in-out infinite;
+    }
+    @keyframes heartBeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.15); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.1); }
+      60% { transform: scale(1); }
+    }
+    /* Radial curve connections */
+    .conn-curve {
+      stroke: var(--conn-color);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      fill: none;
+      opacity: 0.6;
+      stroke-dasharray: 8 4;
+      animation: flowDash 2s linear infinite;
+    }
+    @keyframes flowDash {
+      to { stroke-dashoffset: -24; }
+    }
+    /* Fan-out arc between siblings */
+    .conn-arc {
+      stroke: var(--conn-color);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      fill: none;
+      opacity: 0.5;
+      stroke-dasharray: 8 4;
+      animation: flowDash 2.5s linear infinite;
+      filter: drop-shadow(0 0 2px rgba(109,76,65,0.1));
+    }
+    /* Radial stem from parent outward */
+    .conn-stem {
+      stroke: var(--conn-color);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      opacity: 0.6;
+      stroke-dasharray: 8 4;
+      animation: flowDash 2.2s linear infinite;
+    }
+    /* Generation guide rings — dotted, tĩnh, phân biệt rõ với conn-arc */
+    .gen-ring {
+      fill: none;
+      stroke-width: 2;
+      stroke-dasharray: 0.1 12;
+      stroke-linecap: round;
+    }
+    .gen-ring-hover {
+      fill: none;
+      stroke: transparent;
+      stroke-width: 20;
+      pointer-events: stroke;
+      cursor: pointer;
+    }
+    .gen-ring-hover:hover ~ .gen-ring-line {
+      stroke: rgba(109,76,65,0.25);
+    }
+    /* Generation label */
+    .gen-label {
+      fill: var(--accent);
+      font-size: 11px;
+      font-family: 'Roboto', sans-serif;
+      font-weight: 400;
+      opacity: 0.4;
+    }
+    .gen-ring-tooltip {
+      position: absolute;
+      background: rgba(255,249,240,0.97);
+      color: var(--accent);
+      font-family: 'Playfair Display', serif;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--gold);
+      box-shadow: 0 4px 16px var(--shadow);
+      pointer-events: none;
+      z-index: 10;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .gen-ring-tooltip.show { opacity: 1; }
+
+    /* ========== PERSON NODE ========== */
+    .person-node {
+      position: absolute;
+      width: var(--node-w); height: var(--node-h);
+      background: var(--glass-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 10px 6px 8px;
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+      user-select: none;
+      box-shadow: 0 2px 8px rgba(44,24,16,0.06);
+    }
+    .person-node:hover {
+      transform: scale(1.08);
+      border-color: var(--gold);
+      box-shadow: 0 4px 20px rgba(201,169,110,0.15);
+    }
+
+    /* Tooltip on hover */
+    .person-node::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) scale(0.9);
+      background: rgba(255,249,240,0.97);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      line-height: 1.4;
+      white-space: nowrap;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 16px var(--shadow);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s, visibility 0.25s, transform 0.25s;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .person-node:hover::after {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) scale(1);
+    }
+
+    .person-node.selected {
+      transform: scale(1.15);
+      border-color: var(--gold);
+      background: rgba(255,249,240,0.98);
+      box-shadow:
+        0 0 0 2px var(--gold),
+        0 4px 24px rgba(201,169,110,0.35),
+        0 0 40px rgba(201,169,110,0.15);
+      z-index: 5;
+      animation: selectedCard 2.5s ease-in-out infinite;
+    }
+    .person-node.selected .node-avatar {
+      box-shadow: 0 0 0 3px var(--gold), 0 0 18px rgba(201,169,110,0.4);
+    }
+    @keyframes selectedCard {
+      0%, 100% { box-shadow: 0 0 0 2px var(--gold), 0 4px 24px rgba(201,169,110,0.35), 0 0 40px rgba(201,169,110,0.15); }
+      50% { box-shadow: 0 0 0 3px var(--gold), 0 4px 28px rgba(201,169,110,0.45), 0 0 50px rgba(201,169,110,0.2); }
+    }
+    .person-node.deceased {
+      border-style: dashed;
+    }
+    .person-node.deceased .node-avatar {
+      filter: grayscale(0.4);
+    }
+    .person-node.deceased .node-name::after {
+      content: ' \271D';
+      font-size: 9px;
+      opacity: 0.5;
+    }
+
+    /* Generation color top border - vintage palette */
+    .person-node.gen-0 { border-top: 2px solid #C9A96E; }
+    .person-node.gen-1 { border-top: 2px solid #6D8B4E; }
+    .person-node.gen-2 { border-top: 2px solid #8B5E3C; }
+    .person-node.gen-3 { border-top: 2px solid #5B7B8A; }
+    .person-node.gen-4 { border-top: 2px solid #A0616A; }
+
+    .node-avatar {
+      width: var(--circle-size); height: var(--circle-size); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, rgba(255,249,240,0.9), rgba(245,237,224,0.95));
+      transition: box-shadow 0.3s, transform 0.3s;
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .male .node-avatar {
+      border: 3px solid var(--male);
+      box-shadow: 0 0 10px rgba(91,123,138,0.2);
+    }
+    .male .node-avatar { color: var(--male); }
+    .female .node-avatar {
+      border: 3px solid var(--female);
+      box-shadow: 0 0 10px rgba(160,97,106,0.2);
+    }
+    .female .node-avatar { color: var(--female); }
+
+    .person-node:hover .node-avatar {
+      transform: scale(1.05);
+    }
+    .male:hover .node-avatar {
+      box-shadow: 0 0 16px rgba(91,123,138,0.3);
+    }
+    .female:hover .node-avatar {
+      box-shadow: 0 0 16px rgba(160,97,106,0.3);
+    }
+
+    /* Generation badge */
+    .gen-badge {
+      position: absolute;
+      top: 4px; right: 4px;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      color: #FFF9F0;
+      z-index: 2;
+      box-shadow: 0 1px 4px rgba(44,24,16,0.2);
+    }
+
+    .node-info {
+      text-align: center;
+      margin-top: 6px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .node-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 11px; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      line-height: 1.3;
+      color: var(--text-primary);
+    }
+    .node-years {
+      font-size: 10px; color: var(--text-light);
+      margin-top: 1px;
+      font-weight: 300;
+    }
+
+    /* ========== ZOOM CONTROLS ========== */
+    #zoom-controls {
+      position: absolute; bottom: 24px; left: 24px;
+      display: flex; flex-direction: column; gap: 4px;
+      z-index: 50;
+    }
+    .zoom-btn {
+      width: 40px; height: 40px;
+      background: rgba(255,249,240,0.92);
+      border: 1.5px solid var(--border);
+      border-radius: 10px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; color: var(--accent);
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px var(--shadow);
+    }
+    .zoom-btn:hover {
+      background: var(--hover-bg);
+      border-color: var(--gold);
+      box-shadow: 0 2px 12px rgba(201,169,110,0.2);
+    }
+
+    /* ========== FAB ========== */
+    #fab {
+      position: absolute; bottom: 24px; right: 24px;
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--accent), #5D4037);
+      color: #FFF9F0;
+      border: none; border-radius: 50%; cursor: pointer;
+      font-size: 28px; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(109,76,65,0.3);
+      transition: all 0.3s; z-index: 50;
+    }
+    #fab:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 24px rgba(109,76,65,0.4);
+    }
+
+    /* ========== DETAIL PANEL (Desktop) ========== */
+    #detail-panel {
+      position: fixed; top: 56px; right: 0;
+      width: var(--panel-w); height: calc(100vh - 56px);
+      background: rgba(255,249,240,0.96);
+      border-left: 1px solid var(--border);
+      box-shadow: -4px 0 24px var(--shadow);
+      z-index: 90;
+      transform: translateX(100%);
+      transition: transform 0.35s ease;
+      display: flex; flex-direction: column;
+      overflow-y: auto;
+    }
+    #detail-panel.open { transform: translateX(0); }
+
+    .panel-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-header h3 {
+      font-size: 16px; color: var(--accent);
+    }
+    .panel-close {
+      background: none; border: none; cursor: pointer;
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; color: var(--text-light);
+      transition: background 0.2s;
+    }
+    .panel-close:hover { background: var(--hover-bg); }
+
+    .panel-body { padding: 20px; flex: 1; }
+
+    .panel-avatar {
+      width: 80px; height: 80px; border-radius: 50%;
+      margin: 0 auto 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; color: #FFF9F0;
+      box-shadow: 0 4px 16px rgba(44,24,16,0.15);
+    }
+    .panel-name {
+      text-align: center; font-size: 20px; margin-bottom: 4px;
+      font-family: 'Playfair Display', serif;
+      color: var(--text-primary);
+    }
+    .panel-sub {
+      text-align: center; font-size: 13px;
+      color: var(--text-light); margin-bottom: 20px;
+    }
+
+    .panel-section { margin-bottom: 18px; }
+    .panel-section-title {
+      font-size: 11px; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text-light);
+      margin-bottom: 8px; font-weight: 500;
+    }
+    .panel-field {
+      display: flex; justify-content: space-between;
+      padding: 6px 0; font-size: 14px;
+    }
+    .panel-field-label { color: var(--text-secondary); }
+    .panel-field-value { font-weight: 500; text-align: right; color: var(--text-primary); }
+
+    .panel-relations { margin-top: 8px; }
+    .panel-relation {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 10px; margin-bottom: 6px;
+      background: rgba(201,169,110,0.06); border-radius: 8px;
+      cursor: pointer; font-size: 14px;
+      border: 1px solid rgba(201,169,110,0.1);
+      transition: all 0.2s;
+      color: var(--text-primary);
+    }
+    .panel-relation:hover {
+      background: var(--hover-bg);
+      border-color: var(--gold);
+    }
+    .panel-relation-type {
+      font-size: 11px; color: var(--text-light);
+      min-width: 56px;
+    }
+
+    .panel-actions {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .panel-actions .btn { flex: 1; min-width: 100px; text-align: center; }
+
+    /* ========== MODAL ========== */
+    #modal-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(44,24,16,0.3);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.3s, visibility 0.3s;
+    }
+    #modal-overlay.show { opacity: 1; visibility: visible; }
+
+    .modal {
+      background: rgba(255,249,240,0.98);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 90%; max-width: 480px;
+      max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 12px 48px rgba(44,24,16,0.15), 0 0 0 1px rgba(201,169,110,0.1);
+      transform: scale(0.95);
+      transition: transform 0.3s;
+    }
+    #modal-overlay.show .modal { transform: scale(1); }
+
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px 12px;
+    }
+    .modal-header h2 {
+      font-size: 20px; color: var(--accent);
+    }
+    .modal-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 22px; color: var(--text-light);
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .modal-close:hover { background: var(--hover-bg); }
+
+    .modal-body { padding: 8px 24px 20px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block; font-size: 13px; font-weight: 500;
+      color: var(--text-secondary); margin-bottom: 5px;
+    }
+    .form-label .req { color: var(--danger); }
+    .form-input, .form-select, .form-textarea {
+      width: 100%; padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 15px;
+      background: rgba(255,255,255,0.6);
+      color: var(--text-primary); outline: none;
+      font-family: 'Roboto', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 10px rgba(201,169,110,0.2);
+    }
+    .form-select { cursor: pointer; appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%236D4C41' stroke-width='2' fill='none'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+    .form-textarea { resize: vertical; min-height: 60px; }
+    .form-row { display: flex; gap: 12px; }
+    .form-row .form-group { flex: 1; }
+
+    .modal-footer {
+      display: flex; gap: 10px; justify-content: flex-end;
+      padding: 0 24px 20px;
+    }
+
+    /* ========== TOAST ========== */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: rgba(78,52,46,0.95);
+      color: var(--gold-light);
+      border: 1px solid rgba(201,169,110,0.2);
+      padding: 12px 24px; border-radius: 10px;
+      font-size: 14px; z-index: 600;
+      box-shadow: 0 4px 20px rgba(44,24,16,0.2);
+      opacity: 0; transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; }
+
+    /* ========== RESPONSIVE - Mobile ========== */
+    @media (max-width: 768px) {
+      #header h1 { font-size: 15px; }
+      .header-search input { width: 120px; font-size: 12px; }
+      .header-search input:focus { width: 150px; }
+
+      #tree-area.panel-open { margin-right: 0; }
+
+      #detail-panel {
+        top: auto; bottom: 0; left: 0; right: 0;
+        width: 100%; height: 60vh;
+        border-left: none;
+        border-top: 1px solid var(--border);
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+      }
+      #detail-panel.open { transform: translateY(0); }
+
+      .panel-drag-handle {
+        display: block;
+        width: 40px; height: 4px;
+        background: var(--text-light); border-radius: 2px;
+        margin: 10px auto 0;
+      }
+
+      #fab { bottom: 16px; right: 16px; width: 48px; height: 48px; font-size: 24px; }
+      #zoom-controls { bottom: 16px; left: 16px; }
+      .zoom-btn { width: 36px; height: 36px; font-size: 18px; }
+
+      :root {
+        --node-w: 85px;
+        --node-h: 110px;
+        --circle-size: 50px;
+        --ring-gap: 160px;
+        --ring-min-radius: 90px;
+      }
+      .node-avatar { width: 50px; height: 50px; font-size: 16px; }
+      .node-name { font-size: 10px; }
+      .node-years { font-size: 9px; }
+      .person-node { padding: 8px 4px 6px; }
+    }
+
+    @media (min-width: 769px) {
+      .panel-drag-handle { display: none; }
+    }
+
+    /* Related highlight when a node is selected */
+    .person-node.related {
+      box-shadow: 0 0 0 2px var(--gold), 0 0 12px rgba(201,169,110,0.15);
+    }
+    .person-node.dimmed {
+      opacity: 0.25;
+    }
+
+    /* ========== ANIMATIONS ========== */
+    @keyframes fadeInGlow {
+      0% { opacity: 0; transform: scale(0.5); filter: brightness(1.1); }
+      60% { opacity: 1; transform: scale(1.03); filter: brightness(1.05); }
+      100% { opacity: 1; transform: scale(1); filter: brightness(1); }
+    }
+    .person-node { animation: fadeInGlow 0.55s ease both; }
+
+    /* ========== EMPTY STATE ========== */
+    .empty-hint {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center; color: var(--text-light);
+      font-size: 15px;
+      z-index: 2;
+    }
+    .empty-hint svg { width: 60px; height: 60px; fill: var(--gold); margin-bottom: 12px; opacity: 0.4; }
+
+    /* ========== BRANCH VIEW BAR ========== */
+    #branch-view-bar {
+      position: absolute; top: 12px; left: 50%;
+      transform: translateX(-50%);
+      display: none; align-items: center; gap: 12px;
+      background: rgba(255,249,240,0.95);
+      border: 1px solid var(--gold);
+      border-radius: 10px;
+      padding: 8px 16px;
+      box-shadow: 0 4px 20px var(--shadow);
+      z-index: 50;
+      font-size: 13px;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+    #branch-view-bar strong { color: var(--accent); }
+
+    /* ========== HIDDEN FILE INPUT ========== */
+    #import-input { display: none; }
+
+    /* Confirmation dialog */
+    .confirm-overlay {
+      position: fixed; inset: 0; z-index: 550;
+      background: rgba(44,24,16,0.3);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .confirm-box {
+      background: rgba(255,249,240,0.98);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px; max-width: 360px; width: 90%;
+      text-align: center;
+      box-shadow: 0 12px 48px rgba(44,24,16,0.15);
+    }
+    .confirm-box h3 { margin-bottom: 10px; color: var(--accent); }
+    .confirm-box p { margin-bottom: 20px; font-size: 14px; color: var(--text-secondary); }
+    .confirm-actions { display: flex; gap: 10px; justify-content: center; }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(109,76,65,0.2); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(109,76,65,0.35); }
+  </style>
+</head>
+<body>
+
+<!-- ========== PARTICLES ========== -->
+<div class="particles" id="particles"></div>
+
+<!-- ========== WELCOME SCREEN ========== -->
+<div id="welcome">
+  <div class="welcome-box">
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" style="margin-bottom:12px">
+      <path d="M12 3C10.34 3 9 4.34 9 6s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm-7 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm14 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 3c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#6D4C41"/>
+    </svg>
+    <h1>Gia Pha&#777;</h1>
+    <p>Tạo cây gia phả trực tuyến cho dòng họ của bạn</p>
+    <input type="text" id="family-name-input" placeholder="Nhập tên dòng họ (VD: Họ Nguyễn)" autofocus>
+    <div class="welcome-actions">
+      <button class="btn btn-primary" onclick="startNew()">Bắt Đầu Tạo Mới</button>
+      <button class="btn btn-secondary" onclick="loadSample()">Xem Gia Phả Mẫu</button>
+      <button class="btn btn-secondary" onclick="importFromWelcome()">Nhập Từ File JSON</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MAIN APP ========== -->
+<div id="app" style="display:none">
+  <!-- Header -->
+  <header id="header">
+    <h1 id="family-title">Gia Phả</h1>
+    <div class="header-search">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="search-input" placeholder="Tìm kiếm..." autocomplete="off">
+      <div class="search-results" id="search-results"></div>
+    </div>
+    <button class="header-btn" id="menu-btn" title="Menu">
+      <svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+    </button>
+  </header>
+
+  <!-- Menu Dropdown -->
+  <div id="menu">
+    <button class="menu-item" onclick="exportJSON()">Xuất file JSON</button>
+    <button class="menu-item" onclick="importJSON()">Nhập file JSON</button>
+    <div class="menu-sep"></div>
+    <button class="menu-item" onclick="renameFamilyPrompt()">Đổi tên gia phả</button>
+    <button class="menu-item" onclick="resetData()">Xóa toàn bộ dữ liệu</button>
+  </div>
+
+  <!-- Tree Area -->
+  <div id="tree-area">
+    <div id="tree-viewport">
+      <svg class="connections" id="svg-lines"></svg>
+    </div>
+    <div class="empty-hint" id="empty-hint" style="display:none">
+      <svg viewBox="0 0 24 24"><path d="M12 3C10.34 3 9 4.34 9 6s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm-7 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm14 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 3c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      <p>Chưa có thành viên nào.<br>Nhấn <strong>+</strong> để thêm người đầu tiên.</p>
+    </div>
+
+    <!-- Zoom Controls -->
+    <div id="zoom-controls">
+      <button class="zoom-btn" onclick="zoomIn()" title="Phóng to">+</button>
+      <button class="zoom-btn" onclick="zoomFit()" title="Vừa màn hình">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h6v2H5v4H3V3zm12 0h6v6h-2V5h-4V3zM3 15h2v4h4v2H3v-6zm16 0h2v6h-6v-2h4v-4z"/></svg>
+      </button>
+      <button class="zoom-btn" onclick="zoomOut()" title="Thu nhỏ">&minus;</button>
+    </div>
+
+    <!-- FAB -->
+    <button id="fab" onclick="openAddModal()" title="Thêm thành viên">+</button>
+  </div>
+
+  <!-- Detail Panel -->
+  <div id="detail-panel">
+    <div class="panel-drag-handle"></div>
+    <div class="panel-header">
+      <h3>Chi tiết</h3>
+      <button class="panel-close" onclick="closePanel()">&times;</button>
+    </div>
+    <div class="panel-body" id="panel-body"></div>
+    <div class="panel-actions" id="panel-actions"></div>
+  </div>
+</div>
+
+<!-- ========== MODAL ========== -->
+<div id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="modal-title">Thêm Thành Viên</h2>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Họ và tên <span class="req">*</span></label>
+        <input type="text" class="form-input" id="f-name" placeholder="VD: Nguyễn Văn A">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Giới tính <span class="req">*</span></label>
+          <select class="form-select" id="f-gender">
+            <option value="male">Nam</option>
+            <option value="female">Nữ</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Năm sinh</label>
+          <input type="text" class="form-input" id="f-birth" placeholder="VD: 1950">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Năm mất</label>
+          <input type="text" class="form-input" id="f-death" placeholder="Để trống nếu còn sống">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nơi sinh</label>
+          <input type="text" class="form-input" id="f-birthplace" placeholder="VD: Hà Nội">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Quan hệ</label>
+          <select class="form-select" id="f-rel-type">
+            <option value="">-- Không (người gốc) --</option>
+            <option value="child">Con của</option>
+            <option value="spouse">Vợ/Chồng của</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Với ai</label>
+          <select class="form-select" id="f-rel-target" disabled>
+            <option value="">-- Chọn người --</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ghi chú</label>
+        <textarea class="form-textarea" id="f-note" placeholder="Thêm ghi chú..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+      <button class="btn btn-primary" id="modal-save-btn" onclick="savePerson()">Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden file input -->
+<input type="file" id="import-input" accept=".json">
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ========== PARTICLES ==========
+(function initParticles() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 15; i++) {
+    const span = document.createElement('span');
+    span.style.left = Math.random() * 100 + '%';
+    span.style.top = (40 + Math.random() * 60) + '%';
+    span.style.width = (2 + Math.random() * 2) + 'px';
+    span.style.height = span.style.width;
+    span.style.animationDuration = (6 + Math.random() * 6) + 's';
+    span.style.animationDelay = (Math.random() * 8) + 's';
+    container.appendChild(span);
+  }
+})();
+
+// ========== GENERATION COLORS ==========
+const GEN_COLORS = ['#C9A96E', '#6D8B4E', '#8B5E3C', '#5B7B8A', '#A0616A'];
+function getGenColor(depth) {
+  return GEN_COLORS[Math.min(depth, GEN_COLORS.length - 1)];
+}
+
+// ========== STATE ==========
+let state = {
+  familyName: '',
+  people: [],
+  nextId: 1,
+};
+let selectedId = null;
+let editingId = null;
+let branchViewId = null; // ID of center node when in branch view, null = full view
+let _branchFilter = null; // Set of IDs to display (set during render)
+
+// Viewport
+let vpX = 0, vpY = 0, vpScale = 1;
+let isDragging = false, dragStartX = 0, dragStartY = 0, dragStartVpX = 0, dragStartVpY = 0;
+
+// ========== DATA HELPERS ==========
+function getById(id) { return state.people.find(p => p.id === id); }
+
+function getChildren(personId) {
+  const person = getById(personId);
+  if (!person) return [];
+  const ids = [person.id];
+  if (person.spouseId) ids.push(person.spouseId);
+  return state.people
+    .filter(p => ids.includes(p.parentId) && (!_branchFilter || _branchFilter.has(p.id)))
+    .sort((a, b) => {
+      const ya = parseInt(a.birthYear) || 9999;
+      const yb = parseInt(b.birthYear) || 9999;
+      return ya - yb;
+    });
+}
+
+function getSpouse(personId) {
+  const p = getById(personId);
+  return p && p.spouseId ? getById(p.spouseId) : null;
+}
+
+function getParent(personId) {
+  const p = getById(personId);
+  return p && p.parentId ? getById(p.parentId) : null;
+}
+
+function findRoots() {
+  const people = _branchFilter
+    ? state.people.filter(p => _branchFilter.has(p.id))
+    : state.people;
+  const spouseOnlyIds = new Set();
+  people.forEach(p => {
+    const parentInView = p.parentId && (_branchFilter ? _branchFilter.has(p.parentId) : !!getById(p.parentId));
+    if (parentInView && p.spouseId) {
+      const spouse = getById(p.spouseId);
+      if (spouse && (!_branchFilter || _branchFilter.has(spouse.id)) && !spouse.parentId) spouseOnlyIds.add(spouse.id);
+    }
+  });
+  const rootCandidates = people.filter(p => {
+    const hasParentInView = p.parentId && (!_branchFilter || _branchFilter.has(p.parentId));
+    return !hasParentInView && !spouseOnlyIds.has(p.id);
+  });
+  const rootIds = new Set(rootCandidates.map(r => r.id));
+  return rootCandidates.filter(p => {
+    if (p.spouseId && rootIds.has(p.spouseId)) {
+      const spouse = getById(p.spouseId);
+      if (spouse && spouse.gender === 'male' && p.gender === 'female') return false;
+      if (spouse && p.id > spouse.id && p.gender === spouse.gender) return false;
+    }
+    return true;
+  });
+}
+
+// ========== BRANCH VIEW ==========
+function computeBranchIds(centerId) {
+  const ids = new Set();
+  const center = getById(centerId);
+  if (!center) return ids;
+
+  // Center + spouse
+  ids.add(centerId);
+  if (center.spouseId) ids.add(center.spouseId);
+
+  // 1 đời lên: parent + parent's spouse
+  if (center.parentId) {
+    ids.add(center.parentId);
+    const parent = getById(center.parentId);
+    if (parent && parent.spouseId) ids.add(parent.spouseId);
+  }
+  // Also check if center is a spouse — their partner's parent counts
+  if (center.spouseId) {
+    const spouse = getById(center.spouseId);
+    if (spouse && spouse.parentId) {
+      ids.add(spouse.parentId);
+      const sp = getById(spouse.parentId);
+      if (sp && sp.spouseId) ids.add(sp.spouseId);
+    }
+  }
+
+  // 2 đời xuống: children + grandchildren (+ their spouses)
+  const allChildren = state.people.filter(p => {
+    if (!p.parentId) return false;
+    return p.parentId === centerId || p.parentId === center.spouseId;
+  });
+  allChildren.forEach(child => {
+    ids.add(child.id);
+    if (child.spouseId) ids.add(child.spouseId);
+
+    // Grandchildren
+    const grandchildren = state.people.filter(gc => {
+      if (!gc.parentId) return false;
+      return gc.parentId === child.id || gc.parentId === child.spouseId;
+    });
+    grandchildren.forEach(gc => {
+      ids.add(gc.id);
+      if (gc.spouseId) ids.add(gc.spouseId);
+    });
+  });
+
+  return ids;
+}
+
+// ========== GET GENERATION DEPTH ==========
+function getGeneration(personId, memo) {
+  if (!memo) memo = {};
+  if (memo[personId] !== undefined) return memo[personId];
+  const p = getById(personId);
+  if (!p) return 0;
+  const polar = polarPositions[personId];
+  if (polar) {
+    memo[personId] = polar.ring;
+    return polar.ring;
+  }
+  return 0;
+}
+
+// ========== RADIAL TREE LAYOUT ==========
+let nodePositions = {};
+let polarPositions = {};
+let layoutMeta = {};
+
+function countLeaves(personId) {
+  const children = getChildren(personId);
+  if (children.length === 0) return 1;
+  let sum = 0;
+  children.forEach(c => { sum += countLeaves(c.id); });
+  return sum;
+}
+
+function getMaxDepth(personId, d) {
+  let max = d;
+  getChildren(personId).forEach(c => {
+    max = Math.max(max, getMaxDepth(c.id, d + 1));
+  });
+  return max;
+}
+
+function computeLayout() {
+  nodePositions = {};
+  polarPositions = {};
+  layoutMeta = {};
+  const roots = findRoots();
+  if (roots.length === 0) return;
+
+  const cs = getComputedStyle(document.documentElement);
+  const NODE_W = parseInt(cs.getPropertyValue('--node-w'));
+  const NODE_H = parseInt(cs.getPropertyValue('--node-h'));
+  const CIRCLE_SIZE = parseInt(cs.getPropertyValue('--circle-size'));
+  const SPOUSE_GAP = parseInt(cs.getPropertyValue('--spouse-gap'));
+  const RING_GAP = parseInt(cs.getPropertyValue('--ring-gap'));
+  const RING_MIN = parseInt(cs.getPropertyValue('--ring-min-radius'));
+
+  let globalMaxDepth = 0;
+  roots.forEach(r => {
+    globalMaxDepth = Math.max(globalMaxDepth, getMaxDepth(r.id, 0));
+  });
+
+  const outerR = RING_MIN + globalMaxDepth * RING_GAP;
+  const center = outerR + NODE_W + 200;
+
+  layoutMeta = {
+    centerX: center, centerY: center,
+    maxDepth: globalMaxDepth,
+    RING_GAP, RING_MIN, NODE_W, NODE_H, CIRCLE_SIZE, SPOUSE_GAP
+  };
+
+  function minSweep(personId, depth) {
+    const radius = RING_MIN + depth * RING_GAP;
+    const spouse = getSpouse(personId);
+    const coupleWidth = spouse ? (NODE_W * 2 + SPOUSE_GAP + 10) : (NODE_W + 10);
+    const minSelfAngle = radius > 0 ? coupleWidth / radius : 0.3;
+
+    const children = getChildren(personId);
+    if (children.length === 0) return minSelfAngle;
+
+    let childrenSweep = 0;
+    children.forEach(c => {
+      childrenSweep += minSweep(c.id, depth + 1);
+    });
+    return Math.max(minSelfAngle, childrenSweep);
+  }
+
+  function assignAngles(personId, startA, endA, depth) {
+    const midA = (startA + endA) / 2;
+    const radius = RING_MIN + depth * RING_GAP;
+
+    const spouse = getSpouse(personId);
+    if (spouse) {
+      const spouseOffset = radius > 0 ? (NODE_W + SPOUSE_GAP) / radius : 0.25;
+      polarPositions[personId] = { angle: midA - spouseOffset / 2, ring: depth };
+      polarPositions[spouse.id] = { angle: midA + spouseOffset / 2, ring: depth };
+    } else {
+      polarPositions[personId] = { angle: midA, ring: depth };
+    }
+
+    const children = getChildren(personId);
+    if (children.length === 0) return;
+
+    const childSweeps = children.map(c => minSweep(c.id, depth + 1));
+    const totalMinSweep = childSweeps.reduce((a, b) => a + b, 0);
+    const availableSweep = endA - startA;
+
+    let curAngle = startA;
+    children.forEach((c, i) => {
+      const cSweep = totalMinSweep > 0
+        ? (childSweeps[i] / totalMinSweep) * availableSweep
+        : availableSweep / children.length;
+      assignAngles(c.id, curAngle, curAngle + cSweep, depth + 1);
+      curAngle += cSweep;
+    });
+  }
+
+  const rootSweeps = roots.map(r => minSweep(r.id, 0));
+  const totalMinSweep = rootSweeps.reduce((a, b) => a + b, 0);
+  const totalSweep = Math.max(2 * Math.PI, totalMinSweep);
+
+  let angle = -Math.PI / 2;
+  roots.forEach((r, i) => {
+    const sweep = totalMinSweep > 0
+      ? (rootSweeps[i] / totalMinSweep) * totalSweep
+      : totalSweep / roots.length;
+    assignAngles(r.id, angle, angle + sweep, 0);
+    angle += sweep;
+  });
+
+  Object.keys(polarPositions).forEach(id => {
+    const numId = parseInt(id);
+    const { angle: a, ring } = polarPositions[id];
+    const r = RING_MIN + ring * RING_GAP;
+    nodePositions[numId] = {
+      x: center + r * Math.cos(a) - NODE_W / 2,
+      y: center + r * Math.sin(a) - NODE_H / 2
+    };
+  });
+}
+
+// ========== RENDERING ==========
+function render() {
+  // Set branch filter for layout & rendering
+  _branchFilter = branchViewId ? computeBranchIds(branchViewId) : null;
+  computeLayout();
+  const svg = document.getElementById('svg-lines');
+  svg.style.opacity = '0';
+  renderNodes();
+  renderConnections();
+  renderGuideRings();
+  updateEmptyHint();
+  updateBranchViewUI();
+  setTimeout(() => { svg.style.opacity = '1'; }, 350);
+  // Panel always shows full relationships
+  const savedFilter = _branchFilter;
+  _branchFilter = null;
+  if (selectedId) renderPanel(selectedId);
+  _branchFilter = savedFilter;
+}
+
+function renderNodes() {
+  const viewport = document.getElementById('tree-viewport');
+  viewport.querySelectorAll('.person-node').forEach(n => n.remove());
+
+  const visiblePeople = _branchFilter
+    ? state.people.filter(p => _branchFilter.has(p.id))
+    : state.people;
+  visiblePeople.forEach((p, i) => {
+    const pos = nodePositions[p.id];
+    if (!pos) return;
+
+    const polar = polarPositions[p.id];
+    const genDepth = polar ? polar.ring : 0;
+    const genClass = 'gen-' + Math.min(genDepth, 4);
+    const genColor = getGenColor(genDepth);
+
+    const node = document.createElement('div');
+    node.className = `person-node ${p.gender} ${genClass}${p.deathYear ? ' deceased' : ''}${p.id === selectedId ? ' selected' : ''}`;
+    node.style.left = pos.x + 'px';
+    node.style.top = pos.y + 'px';
+    node.style.animationDelay = (i * 0.04) + 's';
+    node.dataset.id = p.id;
+
+    // Tooltip data
+    let tooltip = p.name;
+    if (p.birthYear) tooltip += p.deathYear ? ` (${p.birthYear}-${p.deathYear})` : ` (${p.birthYear})`;
+    if (p.birthplace) tooltip += ` | ${p.birthplace}`;
+    node.dataset.tooltip = tooltip;
+
+    const nameParts = p.name.split(' ');
+    const shortName = nameParts.length > 2 ? nameParts.slice(-2).join(' ') : p.name;
+    const yearLabel = p.birthYear
+      ? (p.deathYear ? `${p.birthYear} - ${p.deathYear}` : `${p.birthYear}`)
+      : '';
+
+    // Initials for avatar
+    const initial = nameParts[nameParts.length - 1].charAt(0).toUpperCase();
+
+    node.innerHTML = `
+      <div class="gen-badge" style="background:${genColor}">${genDepth + 1}</div>
+      <div class="node-avatar">${initial}</div>
+      <div class="node-info">
+        <div class="node-name" title="${p.name}">${shortName}</div>
+        <div class="node-years">${yearLabel}</div>
+      </div>
+    `;
+    node.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectPerson(p.id);
+    });
+    viewport.appendChild(node);
+  });
+}
+
+function renderGuideRings() {
+  const svg = document.getElementById('svg-lines');
+  if (!layoutMeta.centerX) return;
+
+  const { centerX, centerY, maxDepth, RING_GAP, RING_MIN } = layoutMeta;
+  const genLabels = ['Đời 1 (Cụ Tổ)', 'Đời 2', 'Đời 3', 'Đời 4', 'Đời 5', 'Đời 6', 'Đời 7', 'Đời 8'];
+
+  // Ensure tooltip element exists
+  let tooltip = document.getElementById('gen-ring-tooltip');
+  if (!tooltip) {
+    tooltip = document.createElement('div');
+    tooltip.id = 'gen-ring-tooltip';
+    tooltip.className = 'gen-ring-tooltip';
+    document.getElementById('tree-area').appendChild(tooltip);
+  }
+
+  for (let d = 0; d <= maxDepth; d++) {
+    const r = RING_MIN + d * RING_GAP;
+    if (r <= 0) continue;
+
+    const genColor = getGenColor(d);
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', centerX);
+    circle.setAttribute('cy', centerY);
+    circle.setAttribute('r', r);
+    circle.setAttribute('class', 'gen-ring');
+    circle.setAttribute('style', `stroke: ${genColor}; opacity: 0.35;`);
+    svg.insertBefore(circle, svg.firstChild);
+
+    // Invisible wider ring for hover
+    const hoverRing = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    hoverRing.setAttribute('cx', centerX);
+    hoverRing.setAttribute('cy', centerY);
+    hoverRing.setAttribute('r', r);
+    hoverRing.setAttribute('class', 'gen-ring-hover');
+    hoverRing.dataset.label = genLabels[d] || `Đời ${d + 1}`;
+    hoverRing.dataset.color = genColor;
+    svg.appendChild(hoverRing);
+  }
+}
+
+// Guide ring hover tooltip
+document.getElementById('tree-area').addEventListener('mousemove', (e) => {
+  const ring = e.target.closest('.gen-ring-hover');
+  const tooltip = document.getElementById('gen-ring-tooltip');
+  if (!tooltip) return;
+  if (ring) {
+    tooltip.textContent = ring.dataset.label;
+    tooltip.style.borderColor = ring.dataset.color;
+    tooltip.style.color = ring.dataset.color;
+    tooltip.style.left = (e.clientX - document.getElementById('tree-area').getBoundingClientRect().left + 12) + 'px';
+    tooltip.style.top = (e.clientY - document.getElementById('tree-area').getBoundingClientRect().top - 32) + 'px';
+    tooltip.classList.add('show');
+  } else {
+    tooltip.classList.remove('show');
+  }
+});
+
+function renderConnections() {
+  const svg = document.getElementById('svg-lines');
+  svg.innerHTML = '';
+
+  if (Object.keys(nodePositions).length === 0) return;
+  if (!layoutMeta.centerX) return;
+
+  const { centerX: cx, centerY: cy, RING_GAP, RING_MIN,
+          NODE_W, NODE_H, CIRCLE_SIZE, SPOUSE_GAP } = layoutMeta;
+
+  // SVG size
+  const svgSize = cx * 2 + 100;
+  svg.setAttribute('width', svgSize);
+  svg.setAttribute('height', svgSize);
+
+  // Add SVG defs for gradients
+  const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+
+  // Sepia gradient for connections
+  const goldGrad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  goldGrad.setAttribute('id', 'grad-gold');
+  goldGrad.setAttribute('gradientUnits', 'userSpaceOnUse');
+  goldGrad.innerHTML = '<stop offset="0%" stop-color="rgba(109,76,65,0.4)"/><stop offset="100%" stop-color="rgba(109,76,65,0.15)"/>';
+  defs.appendChild(goldGrad);
+
+  // Blue gradient
+  const blueGrad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  blueGrad.setAttribute('id', 'grad-blue');
+  blueGrad.innerHTML = '<stop offset="0%" stop-color="rgba(109,76,65,0.35)"/><stop offset="100%" stop-color="rgba(91,123,138,0.25)"/>';
+  defs.appendChild(blueGrad);
+
+  // Rose gradient
+  const coralGrad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+  coralGrad.setAttribute('id', 'grad-coral');
+  coralGrad.innerHTML = '<stop offset="0%" stop-color="rgba(109,76,65,0.35)"/><stop offset="100%" stop-color="rgba(160,97,106,0.25)"/>';
+  defs.appendChild(coralGrad);
+
+  svg.appendChild(defs);
+
+  // Lotus watermark at center - sepia/brown tones
+  const lotus = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  lotus.setAttribute('transform', `translate(${cx}, ${cy})`);
+  lotus.setAttribute('opacity', '0.06');
+  lotus.innerHTML = `
+    <path d="M0,-40 C15,-25 15,-5 0,10 C-15,-5 -15,-25 0,-40Z" fill="#6D4C41"/>
+    <path d="M0,-40 C25,-20 20,5 0,10 C-20,5 -25,-20 0,-40Z" fill="#6D4C41" transform="rotate(30)"/>
+    <path d="M0,-40 C25,-20 20,5 0,10 C-20,5 -25,-20 0,-40Z" fill="#6D4C41" transform="rotate(-30)"/>
+    <path d="M0,-40 C25,-20 20,5 0,10 C-20,5 -25,-20 0,-40Z" fill="#6D4C41" transform="rotate(60)"/>
+    <path d="M0,-40 C25,-20 20,5 0,10 C-20,5 -25,-20 0,-40Z" fill="#6D4C41" transform="rotate(-60)"/>
+    <path d="M0,-40 C25,-20 20,5 0,10 C-20,5 -25,-20 0,-40Z" fill="#6D4C41" transform="rotate(90)"/>
+    <path d="M0,-40 C25,-20 20,5 0,10 C-20,5 -25,-20 0,-40Z" fill="#6D4C41" transform="rotate(-90)"/>
+    <path d="M0,-40 C25,-20 20,5 0,10 C-20,5 -25,-20 0,-40Z" fill="#6D4C41" transform="rotate(120)"/>
+    <path d="M0,-40 C25,-20 20,5 0,10 C-20,5 -25,-20 0,-40Z" fill="#6D4C41" transform="rotate(-120)"/>
+    <path d="M0,-40 C25,-20 20,5 0,10 C-20,5 -25,-20 0,-40Z" fill="#6D4C41" transform="rotate(150)"/>
+    <path d="M0,-40 C25,-20 20,5 0,10 C-20,5 -25,-20 0,-40Z" fill="#6D4C41" transform="rotate(-150)"/>
+    <path d="M0,-40 C25,-20 20,5 0,10 C-20,5 -25,-20 0,-40Z" fill="#6D4C41" transform="rotate(180)"/>
+    <circle cx="0" cy="0" r="8" fill="#6D4C41"/>
+  `;
+  svg.appendChild(lotus);
+
+  function makePath(d, cls) {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    path.setAttribute('class', cls);
+    svg.appendChild(path);
+  }
+
+  function makeLine(x1, y1, x2, y2, cls) {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('class', cls);
+    svg.appendChild(line);
+  }
+
+  function makeDot(x, y) {
+    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('cx', x); dot.setAttribute('cy', y);
+    dot.setAttribute('r', 2.5); dot.setAttribute('class', 'conn-dot');
+    // Stagger animation
+    dot.style.animationDelay = (Math.random() * 2) + 's';
+    svg.appendChild(dot);
+  }
+
+  function ringPt(angle, radius) {
+    return { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
+  }
+
+  function arcPath(fromAngle, toAngle, radius) {
+    const p1 = ringPt(fromAngle, radius);
+    const p2 = ringPt(toAngle, radius);
+    let sweep = toAngle - fromAngle;
+    if (sweep < 0) sweep += 2 * Math.PI;
+    const largeArc = sweep > Math.PI ? 1 : 0;
+    return `M ${p1.x} ${p1.y} A ${radius} ${radius} 0 ${largeArc} 1 ${p2.x} ${p2.y}`;
+  }
+
+  const connPeople = _branchFilter
+    ? state.people.filter(p => _branchFilter.has(p.id))
+    : state.people;
+  connPeople.forEach(p => {
+    const polar = polarPositions[p.id];
+    if (!polar) return;
+
+    // --- SPOUSE CONNECTOR ---
+    if (p.spouseId && p.id < p.spouseId) {
+      const sp = polarPositions[p.spouseId];
+      if (sp) {
+        const pos1 = nodePositions[p.id];
+        const pos2 = nodePositions[p.spouseId];
+        if (pos1 && pos2) {
+          const c1 = { x: pos1.x + NODE_W / 2, y: pos1.y + NODE_H / 2 };
+          const c2 = { x: pos2.x + NODE_W / 2, y: pos2.y + NODE_H / 2 };
+          makeLine(c1.x, c1.y, c2.x, c2.y, 'conn-spouse');
+          const hx = (c1.x + c2.x) / 2;
+          const hy = (c1.y + c2.y) / 2;
+          const heart = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          heart.setAttribute('x', hx);
+          heart.setAttribute('y', hy + 4);
+          heart.setAttribute('text-anchor', 'middle');
+          heart.setAttribute('class', 'conn-heart');
+          heart.textContent = '\u2665';
+          svg.appendChild(heart);
+        }
+      }
+    }
+
+    // --- PARENT-TO-CHILD CONNECTIONS ---
+    if (p.spouseId && p.id > p.spouseId) return;
+
+    const children = getChildren(p.id);
+    if (children.length === 0) return;
+
+    const spouse = getSpouse(p.id);
+    let parentAngle = polar.angle;
+    if (spouse && polarPositions[spouse.id]) {
+      parentAngle = (polar.angle + polarPositions[spouse.id].angle) / 2;
+    }
+
+    const parentR = RING_MIN + polar.ring * RING_GAP;
+
+    // Stem starts from midpoint of spouse line (center of couple)
+    const pos1 = nodePositions[p.id];
+    let stemStartPt;
+    if (spouse && nodePositions[spouse.id]) {
+      const pos2 = nodePositions[spouse.id];
+      stemStartPt = { x: (pos1.x + pos2.x) / 2 + NODE_W / 2, y: (pos1.y + pos2.y) / 2 + NODE_H / 2 };
+    } else {
+      stemStartPt = { x: pos1.x + NODE_W / 2, y: pos1.y + NODE_H / 2 };
+    }
+
+    const childData = [];
+    children.forEach(child => {
+      const cp = polarPositions[child.id];
+      if (cp) {
+        childData.push({ id: child.id, angle: cp.angle, ring: cp.ring, gender: child.gender });
+      }
+    });
+    if (childData.length === 0) return;
+
+    const childR = RING_MIN + childData[0].ring * RING_GAP;
+    const hubR = parentR + (childR - parentR) * 0.45;
+
+    const stemEnd = ringPt(parentAngle, hubR);
+
+    makeLine(stemStartPt.x, stemStartPt.y, stemEnd.x, stemEnd.y, 'conn-stem');
+    makeDot(stemStartPt.x, stemStartPt.y);
+
+    if (childData.length === 1) {
+      const childAngle = childData[0].angle;
+      const hubPt = ringPt(parentAngle, hubR);
+      const childPt = ringPt(childAngle, childR);
+
+      if (Math.abs(childAngle - parentAngle) > 0.01) {
+        makePath(arcPath(parentAngle, childAngle, hubR), 'conn-arc');
+        const arcEnd = ringPt(childAngle, hubR);
+        makeLine(arcEnd.x, arcEnd.y, childPt.x, childPt.y, 'conn-stem');
+        makeDot(arcEnd.x, arcEnd.y);
+      } else {
+        makeLine(hubPt.x, hubPt.y, childPt.x, childPt.y, 'conn-stem');
+      }
+      makeDot(childPt.x, childPt.y);
+    } else {
+      const sorted = [...childData].sort((a, b) => a.angle - b.angle);
+      const minAngle = sorted[0].angle;
+      const maxAngle = sorted[sorted.length - 1].angle;
+
+      makeDot(stemEnd.x, stemEnd.y);
+
+      if (Math.abs(maxAngle - minAngle) > 0.005) {
+        makePath(arcPath(minAngle, maxAngle, hubR), 'conn-arc');
+      }
+
+      const stemHubAngle = parentAngle;
+      if (stemHubAngle < minAngle - 0.01) {
+        makePath(arcPath(stemHubAngle, minAngle, hubR), 'conn-arc');
+      } else if (stemHubAngle > maxAngle + 0.01) {
+        makePath(arcPath(maxAngle, stemHubAngle, hubR), 'conn-arc');
+      }
+
+      sorted.forEach(cd => {
+        const hubPt = ringPt(cd.angle, hubR);
+        const childPt = ringPt(cd.angle, childR);
+        makeLine(hubPt.x, hubPt.y, childPt.x, childPt.y, 'conn-stem');
+        makeDot(hubPt.x, hubPt.y);
+        makeDot(childPt.x, childPt.y);
+      });
+    }
+  });
+}
+
+function updateEmptyHint() {
+  document.getElementById('empty-hint').style.display = state.people.length === 0 ? 'block' : 'none';
+}
+
+// ========== BRANCH VIEW UI ==========
+function enterBranchView(id) {
+  branchViewId = id;
+  selectedId = id;
+  render();
+  setTimeout(zoomFit, 50);
+}
+
+function exitBranchView() {
+  branchViewId = null;
+  render();
+  setTimeout(zoomFit, 50);
+}
+
+function updateBranchViewUI() {
+  let bar = document.getElementById('branch-view-bar');
+  if (branchViewId) {
+    const p = getById(branchViewId);
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'branch-view-bar';
+      document.getElementById('tree-area').appendChild(bar);
+    }
+    bar.innerHTML = `
+      <span>Xem nhánh: <strong>${p ? p.name : ''}</strong></span>
+      <button class="btn btn-secondary btn-sm" onclick="exitBranchView()">Xem toàn bộ</button>
+    `;
+    bar.style.display = 'flex';
+  } else if (bar) {
+    bar.style.display = 'none';
+  }
+}
+
+// ========== DETAIL PANEL ==========
+function getRelatedIds(id) {
+  const p = getById(id);
+  if (!p) return new Set();
+  const related = new Set([id]);
+  if (p.spouseId) related.add(p.spouseId);
+  if (p.parentId) {
+    related.add(p.parentId);
+    const par = getById(p.parentId);
+    if (par && par.spouseId) related.add(par.spouseId);
+  }
+  getChildren(id).forEach(c => related.add(c.id));
+  if (p.parentId) {
+    const par = getById(p.parentId);
+    const parSpouse = par && par.spouseId ? getById(par.spouseId) : null;
+    state.people.forEach(s => {
+      if (s.parentId === p.parentId || (parSpouse && s.parentId === parSpouse.id)) related.add(s.id);
+    });
+  }
+  return related;
+}
+
+function selectPerson(id) {
+  selectedId = id;
+  // getRelatedIds uses state.people directly — temporarily clear filter
+  const savedFilter = _branchFilter;
+  _branchFilter = null;
+  const related = getRelatedIds(id);
+  document.querySelectorAll('.person-node').forEach(n => {
+    const nid = parseInt(n.dataset.id);
+    n.classList.toggle('selected', nid === id);
+    n.classList.toggle('related', nid !== id && related.has(nid));
+    n.classList.toggle('dimmed', !related.has(nid));
+  });
+  renderPanel(id);
+  _branchFilter = savedFilter;
+  const panel = document.getElementById('detail-panel');
+  panel.classList.add('open');
+  if (window.innerWidth > 768) {
+    document.getElementById('tree-area').classList.add('panel-open');
+  }
+}
+
+function closePanel() {
+  selectedId = null;
+  document.querySelectorAll('.person-node').forEach(n => {
+    n.classList.remove('selected', 'related', 'dimmed');
+  });
+  document.getElementById('detail-panel').classList.remove('open');
+  document.getElementById('tree-area').classList.remove('panel-open');
+}
+
+function renderPanel(id) {
+  const p = getById(id);
+  if (!p) return;
+
+  const spouse = getSpouse(id);
+  const parent = getParent(id);
+  const children = getChildren(id);
+  const initial = p.name.split(' ').pop().charAt(0).toUpperCase();
+  const years = p.birthYear ? `${p.birthYear}${p.deathYear ? ' - ' + p.deathYear : ' - nay'}` : '';
+  const bgColor = p.gender === 'male' ? 'var(--male)' : 'var(--female)';
+
+  let relationsHTML = '';
+
+  if (parent) {
+    relationsHTML += `<div class="panel-relation" onclick="selectPerson(${parent.id})">
+      <span class="panel-relation-type">${parent.gender === 'male' ? 'Cha' : 'Mẹ'}</span>
+      <span>${parent.name}</span>
+    </div>`;
+    const otherParent = getSpouse(parent.id);
+    if (otherParent) {
+      relationsHTML += `<div class="panel-relation" onclick="selectPerson(${otherParent.id})">
+        <span class="panel-relation-type">${otherParent.gender === 'male' ? 'Cha' : 'Mẹ'}</span>
+        <span>${otherParent.name}</span>
+      </div>`;
+    }
+  }
+
+  if (spouse) {
+    relationsHTML += `<div class="panel-relation" onclick="selectPerson(${spouse.id})">
+      <span class="panel-relation-type">${p.gender === 'male' ? 'Vợ' : 'Chồng'}</span>
+      <span>${spouse.name}</span>
+    </div>`;
+  }
+
+  children.forEach(c => {
+    relationsHTML += `<div class="panel-relation" onclick="selectPerson(${c.id})">
+      <span class="panel-relation-type">Con</span>
+      <span>${c.name}</span>
+    </div>`;
+  });
+
+  document.getElementById('panel-body').innerHTML = `
+    <div class="panel-avatar" style="background:${bgColor}">${initial}</div>
+    <div class="panel-name">${p.name}</div>
+    <div class="panel-sub">${years}${p.deathYear ? ' (Đã mất)' : ''}</div>
+
+    <div class="panel-section">
+      <div class="panel-section-title">Thông tin</div>
+      ${p.birthYear ? `<div class="panel-field"><span class="panel-field-label">Năm sinh</span><span class="panel-field-value">${p.birthYear}</span></div>` : ''}
+      ${p.deathYear ? `<div class="panel-field"><span class="panel-field-label">Năm mất</span><span class="panel-field-value">${p.deathYear}</span></div>` : ''}
+      ${p.birthplace ? `<div class="panel-field"><span class="panel-field-label">Nơi sinh</span><span class="panel-field-value">${p.birthplace}</span></div>` : ''}
+      <div class="panel-field"><span class="panel-field-label">Giới tính</span><span class="panel-field-value">${p.gender === 'male' ? 'Nam' : 'Nữ'}</span></div>
+    </div>
+
+    ${relationsHTML ? `
+    <div class="panel-section">
+      <div class="panel-section-title">Quan hệ</div>
+      <div class="panel-relations">${relationsHTML}</div>
+    </div>` : ''}
+
+    ${p.note ? `
+    <div class="panel-section">
+      <div class="panel-section-title">Ghi chú</div>
+      <p style="font-size:14px;color:var(--text-secondary);line-height:1.5">${p.note}</p>
+    </div>` : ''}
+  `;
+
+  const branchBtn = branchViewId === p.id
+    ? `<button class="btn btn-secondary btn-sm" onclick="exitBranchView()">Xem toàn bộ</button>`
+    : `<button class="btn btn-secondary btn-sm" onclick="enterBranchView(${p.id})">Xem nhánh</button>`;
+  document.getElementById('panel-actions').innerHTML = `
+    <button class="btn btn-secondary btn-sm" onclick="openEditModal(${p.id})">Sửa</button>
+    <button class="btn btn-secondary btn-sm" onclick="openAddModal(${p.id}, 'child')">+ Con</button>
+    ${!spouse ? `<button class="btn btn-secondary btn-sm" onclick="openAddModal(${p.id}, 'spouse')">+ Vợ/Chồng</button>` : ''}
+    ${branchBtn}
+    <button class="btn btn-danger btn-sm" onclick="confirmDelete(${p.id})">Xóa</button>
+  `;
+}
+
+// ========== MODAL ==========
+function openAddModal(relTargetId, relType) {
+  editingId = null;
+  document.getElementById('modal-title').textContent = 'Thêm Thành Viên';
+  document.getElementById('modal-save-btn').textContent = 'Thêm';
+  clearForm();
+  populateRelTargets();
+
+  if (relTargetId && relType) {
+    document.getElementById('f-rel-type').value = relType;
+    onRelTypeChange();
+    document.getElementById('f-rel-target').value = relTargetId;
+  }
+
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function openEditModal(id) {
+  const p = getById(id);
+  if (!p) return;
+  editingId = id;
+  document.getElementById('modal-title').textContent = 'Sửa Thông Tin';
+  document.getElementById('modal-save-btn').textContent = 'Cập Nhật';
+
+  document.getElementById('f-name').value = p.name;
+  document.getElementById('f-gender').value = p.gender;
+  document.getElementById('f-birth').value = p.birthYear || '';
+  document.getElementById('f-death').value = p.deathYear || '';
+  document.getElementById('f-birthplace').value = p.birthplace || '';
+  document.getElementById('f-note').value = p.note || '';
+
+  populateRelTargets();
+  if (p.parentId) {
+    document.getElementById('f-rel-type').value = 'child';
+    onRelTypeChange();
+    document.getElementById('f-rel-target').value = p.parentId;
+  } else if (p.spouseId) {
+    const hasChildren = state.people.some(c => c.parentId === p.id);
+    if (!hasChildren && p.spouseId) {
+      document.getElementById('f-rel-type').value = 'spouse';
+      onRelTypeChange();
+      document.getElementById('f-rel-target').value = p.spouseId;
+    }
+  }
+
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+  editingId = null;
+}
+
+function clearForm() {
+  ['f-name', 'f-birth', 'f-death', 'f-birthplace', 'f-note'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-gender').value = 'male';
+  document.getElementById('f-rel-type').value = '';
+  document.getElementById('f-rel-target').value = '';
+  document.getElementById('f-rel-target').disabled = true;
+}
+
+function populateRelTargets() {
+  const select = document.getElementById('f-rel-target');
+  select.innerHTML = '<option value="">-- Chọn người --</option>';
+  state.people.forEach(p => {
+    if (editingId && p.id === editingId) return;
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.name;
+    select.appendChild(opt);
+  });
+}
+
+function onRelTypeChange() {
+  const relType = document.getElementById('f-rel-type').value;
+  const target = document.getElementById('f-rel-target');
+  target.disabled = !relType;
+  if (!relType) target.value = '';
+
+  const select = document.getElementById('f-rel-target');
+  const currentVal = select.value;
+  select.innerHTML = '<option value="">-- Chọn người --</option>';
+
+  state.people.forEach(p => {
+    if (editingId && p.id === editingId) return;
+    if (relType === 'spouse') {
+      if (p.spouseId && p.spouseId !== editingId) return;
+    }
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.name;
+    select.appendChild(opt);
+  });
+  if (currentVal) select.value = currentVal;
+}
+
+document.getElementById('f-rel-type').addEventListener('change', onRelTypeChange);
+
+function savePerson() {
+  const name = document.getElementById('f-name').value.trim();
+  const gender = document.getElementById('f-gender').value;
+  const birthYear = document.getElementById('f-birth').value.trim();
+  const deathYear = document.getElementById('f-death').value.trim();
+  const birthplace = document.getElementById('f-birthplace').value.trim();
+  const note = document.getElementById('f-note').value.trim();
+  const relType = document.getElementById('f-rel-type').value;
+  const relTargetId = document.getElementById('f-rel-target').value ? parseInt(document.getElementById('f-rel-target').value) : null;
+
+  if (!name) {
+    showToast('Vui lòng nhập họ và tên');
+    return;
+  }
+  if (relType && !relTargetId) {
+    showToast('Vui lòng chọn người liên quan');
+    return;
+  }
+
+  if (editingId) {
+    const p = getById(editingId);
+    if (p.spouseId) {
+      const oldSpouse = getById(p.spouseId);
+      if (oldSpouse && oldSpouse.spouseId === p.id) oldSpouse.spouseId = null;
+    }
+
+    p.name = name;
+    p.gender = gender;
+    p.birthYear = birthYear;
+    p.deathYear = deathYear;
+    p.birthplace = birthplace;
+    p.note = note;
+
+    if (relType === 'child') {
+      p.parentId = relTargetId;
+      p.spouseId = p.spouseId;
+    } else if (relType === 'spouse') {
+      p.parentId = null;
+      p.spouseId = relTargetId;
+      const target = getById(relTargetId);
+      if (target) target.spouseId = p.id;
+    } else {
+      p.parentId = null;
+    }
+
+    showToast('Đã cập nhật');
+  } else {
+    const newPerson = {
+      id: state.nextId++,
+      name, gender, birthYear, deathYear, birthplace, note,
+      parentId: null,
+      spouseId: null,
+    };
+
+    if (relType === 'child') {
+      newPerson.parentId = relTargetId;
+    } else if (relType === 'spouse') {
+      newPerson.spouseId = relTargetId;
+      const target = getById(relTargetId);
+      if (target) target.spouseId = newPerson.id;
+    }
+
+    state.people.push(newPerson);
+    showToast(`Đã thêm ${name}`);
+  }
+
+  saveState();
+  closeModal();
+  render();
+  if (editingId || selectedId) {
+    selectPerson(editingId || selectedId);
+  }
+}
+
+// ========== DELETE ==========
+function confirmDelete(id) {
+  const p = getById(id);
+  if (!p) return;
+
+  const children = getChildren(id);
+  const childInfo = children.length > 0 ? `\n(${children.length} người con cũng sẽ trở thành gốc)` : '';
+
+  const overlay = document.createElement('div');
+  overlay.className = 'confirm-overlay';
+  overlay.innerHTML = `
+    <div class="confirm-box">
+      <h3>Xác nhận xóa</h3>
+      <p>Bạn có chắc muốn xóa <strong>${p.name}</strong>?${childInfo}</p>
+      <div class="confirm-actions">
+        <button class="btn btn-secondary btn-sm" onclick="this.closest('.confirm-overlay').remove()">Hủy</button>
+        <button class="btn btn-danger btn-sm" id="confirm-delete-btn">Xóa</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+
+  document.getElementById('confirm-delete-btn').onclick = () => {
+    deletePerson(id);
+    overlay.remove();
+  };
+}
+
+function deletePerson(id) {
+  const p = getById(id);
+  if (!p) return;
+
+  if (p.spouseId) {
+    const spouse = getById(p.spouseId);
+    if (spouse) spouse.spouseId = null;
+  }
+
+  state.people.forEach(c => {
+    if (c.parentId === id) c.parentId = null;
+  });
+
+  state.people = state.people.filter(pp => pp.id !== id);
+  if (branchViewId === id) branchViewId = null;
+  closePanel();
+  saveState();
+  render();
+  showToast('Đã xóa');
+}
+
+// ========== ZOOM & PAN ==========
+function updateViewport() {
+  const el = document.getElementById('tree-viewport');
+  el.style.transform = `translate(${vpX}px, ${vpY}px) scale(${vpScale})`;
+}
+
+function zoomIn() {
+  vpScale = Math.min(vpScale * 1.2, 3);
+  updateViewport();
+}
+
+function zoomOut() {
+  vpScale = Math.max(vpScale / 1.2, 0.2);
+  updateViewport();
+}
+
+function zoomFit() {
+  if (state.people.length === 0) { vpX = 0; vpY = 0; vpScale = 1; updateViewport(); return; }
+
+  const NODE_W = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--node-w'));
+  const NODE_H = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--node-h'));
+
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  Object.values(nodePositions).forEach(pos => {
+    if (pos.x < minX) minX = pos.x;
+    if (pos.y < minY) minY = pos.y;
+    if (pos.x + NODE_W > maxX) maxX = pos.x + NODE_W;
+    if (pos.y + NODE_H > maxY) maxY = pos.y + NODE_H;
+  });
+
+  const area = document.getElementById('tree-area');
+  const areaW = area.clientWidth;
+  const areaH = area.clientHeight;
+  const treeW = maxX - minX + 80;
+  const treeH = maxY - minY + 80;
+
+  vpScale = Math.min(areaW / treeW, areaH / treeH, 1.5);
+  vpScale = Math.max(vpScale, 0.2);
+  vpX = (areaW - treeW * vpScale) / 2 - minX * vpScale + 40 * vpScale;
+  vpY = (areaH - treeH * vpScale) / 2 - minY * vpScale + 40 * vpScale;
+  updateViewport();
+}
+
+// Mouse/Touch pan
+const treeArea = document.getElementById('tree-area');
+
+treeArea.addEventListener('mousedown', (e) => {
+  if (e.target.closest('.person-node') || e.target.closest('.zoom-btn') || e.target.closest('#fab')) return;
+  isDragging = true;
+  dragStartX = e.clientX;
+  dragStartY = e.clientY;
+  dragStartVpX = vpX;
+  dragStartVpY = vpY;
+  treeArea.classList.add('grabbing');
+});
+
+window.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  vpX = dragStartVpX + (e.clientX - dragStartX);
+  vpY = dragStartVpY + (e.clientY - dragStartY);
+  updateViewport();
+});
+
+window.addEventListener('mouseup', () => {
+  isDragging = false;
+  treeArea.classList.remove('grabbing');
+});
+
+// Mouse wheel zoom
+treeArea.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.9 : 1.1;
+  const rect = treeArea.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+
+  const newScale = Math.min(Math.max(vpScale * delta, 0.2), 3);
+  const ratio = newScale / vpScale;
+  vpX = mx - (mx - vpX) * ratio;
+  vpY = my - (my - vpY) * ratio;
+  vpScale = newScale;
+  updateViewport();
+}, { passive: false });
+
+// Touch pan & pinch zoom
+let touches = [];
+let lastTouchDist = 0;
+
+treeArea.addEventListener('touchstart', (e) => {
+  if (e.target.closest('.person-node') || e.target.closest('.zoom-btn') || e.target.closest('#fab')) return;
+  touches = Array.from(e.touches);
+  if (touches.length === 1) {
+    isDragging = true;
+    dragStartX = touches[0].clientX;
+    dragStartY = touches[0].clientY;
+    dragStartVpX = vpX;
+    dragStartVpY = vpY;
+  } else if (touches.length === 2) {
+    isDragging = false;
+    lastTouchDist = Math.hypot(touches[1].clientX - touches[0].clientX, touches[1].clientY - touches[0].clientY);
+  }
+}, { passive: true });
+
+treeArea.addEventListener('touchmove', (e) => {
+  const t = Array.from(e.touches);
+  if (t.length === 1 && isDragging) {
+    vpX = dragStartVpX + (t[0].clientX - dragStartX);
+    vpY = dragStartVpY + (t[0].clientY - dragStartY);
+    updateViewport();
+  } else if (t.length === 2) {
+    const dist = Math.hypot(t[1].clientX - t[0].clientX, t[1].clientY - t[0].clientY);
+    if (lastTouchDist) {
+      const delta = dist / lastTouchDist;
+      const rect = treeArea.getBoundingClientRect();
+      const cx = (t[0].clientX + t[1].clientX) / 2 - rect.left;
+      const cy = (t[0].clientY + t[1].clientY) / 2 - rect.top;
+      const newScale = Math.min(Math.max(vpScale * delta, 0.2), 3);
+      const ratio = newScale / vpScale;
+      vpX = cx - (cx - vpX) * ratio;
+      vpY = cy - (cy - vpY) * ratio;
+      vpScale = newScale;
+      updateViewport();
+    }
+    lastTouchDist = dist;
+  }
+}, { passive: true });
+
+treeArea.addEventListener('touchend', () => {
+  isDragging = false;
+  lastTouchDist = 0;
+});
+
+// Click on empty area -> close panel
+treeArea.addEventListener('click', (e) => {
+  if (!e.target.closest('.person-node') && !e.target.closest('.zoom-btn') && !e.target.closest('#fab')) {
+    closePanel();
+  }
+});
+
+// ========== SEARCH ==========
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.trim().toLowerCase();
+  if (!q) { searchResults.classList.remove('show'); return; }
+
+  const matches = state.people.filter(p => p.name.toLowerCase().includes(q)).slice(0, 8);
+  if (matches.length === 0) {
+    searchResults.classList.remove('show');
+    return;
+  }
+
+  searchResults.innerHTML = matches.map(p => {
+    const years = p.birthYear ? `(${p.birthYear}${p.deathYear ? '-' + p.deathYear : ''})` : '';
+    return `<div class="search-item" data-id="${p.id}">${p.name} <small>${years}</small></div>`;
+  }).join('');
+  searchResults.classList.add('show');
+});
+
+searchResults.addEventListener('click', (e) => {
+  const item = e.target.closest('.search-item');
+  if (item) {
+    const id = parseInt(item.dataset.id);
+    selectPerson(id);
+    const pos = nodePositions[id];
+    if (pos) {
+      const area = document.getElementById('tree-area');
+      const NODE_W = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--node-w'));
+      const NODE_H = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--node-h'));
+      vpX = area.clientWidth / 2 - (pos.x + NODE_W / 2) * vpScale;
+      vpY = area.clientHeight / 2 - (pos.y + NODE_H / 2) * vpScale;
+      updateViewport();
+    }
+    searchInput.value = '';
+    searchResults.classList.remove('show');
+  }
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.header-search')) searchResults.classList.remove('show');
+});
+
+// ========== MENU ==========
+document.getElementById('menu-btn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('menu').classList.toggle('show');
+});
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#menu') && !e.target.closest('#menu-btn')) {
+    document.getElementById('menu').classList.remove('show');
+  }
+});
+
+function renameFamilyPrompt() {
+  document.getElementById('menu').classList.remove('show');
+  const name = prompt('Nhập tên mới cho gia phả:', state.familyName);
+  if (name && name.trim()) {
+    state.familyName = name.trim();
+    document.getElementById('family-title').textContent = `Gia Phả ${state.familyName}`;
+    saveState();
+    showToast('Đã đổi tên');
+  }
+}
+
+function resetData() {
+  document.getElementById('menu').classList.remove('show');
+  if (confirm('Bạn có chắc muốn xóa toàn bộ dữ liệu gia phả? Hành động này không thể hoàn tác.')) {
+    localStorage.removeItem('familyTreeState');
+    location.reload();
+  }
+}
+
+// ========== IMPORT / EXPORT ==========
+function exportJSON() {
+  document.getElementById('menu').classList.remove('show');
+  const data = JSON.stringify(state, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `gia-pha-${state.familyName || 'family'}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Đã xuất file JSON');
+}
+
+function importJSON() {
+  document.getElementById('menu').classList.remove('show');
+  document.getElementById('import-input').click();
+}
+
+function importFromWelcome() {
+  document.getElementById('import-input').click();
+}
+
+document.getElementById('import-input').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.people && Array.isArray(data.people)) {
+        state = data;
+        saveState();
+        showApp();
+        render();
+        zoomFit();
+        showToast('Đã nhập gia phả thành công');
+      } else {
+        showToast('File không đúng định dạng');
+      }
+    } catch {
+      showToast('Lỗi đọc file');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// ========== PERSISTENCE ==========
+function saveState() {
+  localStorage.setItem('familyTreeState', JSON.stringify(state));
+}
+
+function loadState() {
+  const data = localStorage.getItem('familyTreeState');
+  if (data) {
+    try {
+      state = JSON.parse(data);
+      return true;
+    } catch { return false; }
+  }
+  return false;
+}
+
+// ========== STARTUP ==========
+function showApp() {
+  document.getElementById('welcome').classList.add('hidden');
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('family-title').textContent = `Gia Phả ${state.familyName}`;
+}
+
+function startNew() {
+  const name = document.getElementById('family-name-input').value.trim();
+  if (!name) {
+    document.getElementById('family-name-input').focus();
+    showToast('Vui lòng nhập tên dòng họ');
+    return;
+  }
+  state.familyName = name;
+  saveState();
+  showApp();
+  render();
+  setTimeout(() => openAddModal(), 300);
+}
+
+function loadSample() {
+  state = {
+    familyName: 'Họ Nguyễn',
+    nextId: 31,
+    people: [
+      // ===== THẾ HỆ 1 - Cụ Tổ =====
+      { id: 1, name: 'Nguyễn Văn Đức', gender: 'male', birthYear: '1920', deathYear: '2005', birthplace: 'Hà Đông, Hà Nội', parentId: null, spouseId: 2, note: 'Cụ Tổ - Nguyên giáo viên trường làng. Có công xây dựng nhà thờ họ.' },
+      { id: 2, name: 'Trần Thị Lan', gender: 'female', birthYear: '1923', deathYear: '2010', birthplace: 'Thanh Trì, Hà Nội', parentId: null, spouseId: 1, note: 'Cụ Bà - Buôn bán vải ở chợ Đồng Xuân.' },
+
+      // ===== THẾ HỆ 2 - Ông Bà =====
+      { id: 3, name: 'Nguyễn Văn Hùng', gender: 'male', birthYear: '1943', deathYear: '', birthplace: 'Hà Đông, Hà Nội', parentId: 1, spouseId: 4, note: 'Con trưởng. Cán bộ nhà nước nghỉ hưu.' },
+      { id: 4, name: 'Phạm Thị Mai', gender: 'female', birthYear: '1946', deathYear: '', birthplace: 'Hải Phòng', parentId: null, spouseId: 3, note: 'Giáo viên tiểu học nghỉ hưu.' },
+
+      { id: 5, name: 'Nguyễn Văn Minh', gender: 'male', birthYear: '1948', deathYear: '2020', birthplace: 'Hà Đông, Hà Nội', parentId: 1, spouseId: 6, note: 'Con thứ. Bác sĩ Bệnh viện Bạch Mai.' },
+      { id: 6, name: 'Lê Thị Hoa', gender: 'female', birthYear: '1950', deathYear: '', birthplace: 'Nam Định', parentId: null, spouseId: 5, note: 'Dược sĩ.' },
+
+      { id: 7, name: 'Nguyễn Văn Thành', gender: 'male', birthYear: '1952', deathYear: '', birthplace: 'Hà Đông, Hà Nội', parentId: 1, spouseId: 8, note: 'Con thứ ba. Kinh doanh vật liệu xây dựng.' },
+      { id: 8, name: 'Vũ Thị Phượng', gender: 'female', birthYear: '1955', deathYear: '', birthplace: 'Hà Nam', parentId: null, spouseId: 7, note: 'Kế toán trưởng.' },
+
+      { id: 9, name: 'Nguyễn Thị Thanh', gender: 'female', birthYear: '1957', deathYear: '', birthplace: 'Hà Đông, Hà Nội', parentId: 1, spouseId: null, note: 'Con gái út. Giảng viên Đại học Sư phạm.' },
+
+      // ===== THẾ HỆ 3 - Cha Mẹ =====
+      { id: 10, name: 'Nguyễn Văn Tuấn', gender: 'male', birthYear: '1970', deathYear: '', birthplace: 'Hà Nội', parentId: 3, spouseId: 11, note: 'Kỹ sư xây dựng. Công ty Coteccons.' },
+      { id: 11, name: 'Đỗ Thị Nga', gender: 'female', birthYear: '1972', deathYear: '', birthplace: 'Hà Nội', parentId: null, spouseId: 10, note: 'Kế toán.' },
+
+      { id: 12, name: 'Nguyễn Thị Hằng', gender: 'female', birthYear: '1973', deathYear: '', birthplace: 'Hà Nội', parentId: 3, spouseId: null, note: 'Giáo viên THPT. Chưa lập gia đình.' },
+
+      { id: 13, name: 'Nguyễn Văn Đạt', gender: 'male', birthYear: '1976', deathYear: '', birthplace: 'Hà Nội', parentId: 3, spouseId: 14, note: 'Kiến trúc sư.' },
+      { id: 14, name: 'Trần Thị Thu', gender: 'female', birthYear: '1978', deathYear: '', birthplace: 'Hà Nội', parentId: null, spouseId: 13, note: 'Bác sĩ nhi khoa.' },
+
+      { id: 15, name: 'Nguyễn Văn Nam', gender: 'male', birthYear: '1975', deathYear: '', birthplace: 'Hà Nội', parentId: 5, spouseId: 16, note: 'Tiến sĩ Công nghệ thông tin. Giảng viên ĐH Bách Khoa.' },
+      { id: 16, name: 'Hoàng Thị Vân', gender: 'female', birthYear: '1977', deathYear: '', birthplace: 'Thái Bình', parentId: null, spouseId: 15, note: 'Nhà báo VTV.' },
+
+      { id: 17, name: 'Nguyễn Thị Linh', gender: 'female', birthYear: '1979', deathYear: '', birthplace: 'Hà Nội', parentId: 5, spouseId: null, note: 'Dược sĩ. Hiện sống tại TP. Hồ Chí Minh.' },
+
+      { id: 18, name: 'Nguyễn Văn Phong', gender: 'male', birthYear: '1980', deathYear: '', birthplace: 'Hà Nội', parentId: 7, spouseId: 19, note: 'Giám đốc công ty TNHH Phong Thành.' },
+      { id: 19, name: 'Bùi Thị Hạnh', gender: 'female', birthYear: '1982', deathYear: '', birthplace: 'Hải Dương', parentId: null, spouseId: 18, note: 'Quản lý nhà hàng.' },
+
+      { id: 20, name: 'Nguyễn Thị Ngọc', gender: 'female', birthYear: '1983', deathYear: '', birthplace: 'Hà Nội', parentId: 7, spouseId: null, note: 'Du học sinh Nhật Bản. Kỹ sư phần mềm tại Tokyo.' },
+
+      // ===== THẾ HỆ 4 - Con cháu =====
+      { id: 21, name: 'Nguyễn Văn Bảo', gender: 'male', birthYear: '1998', deathYear: '', birthplace: 'Hà Nội', parentId: 10, spouseId: 22, note: 'Kỹ sư phần mềm FPT Software.' },
+      { id: 22, name: 'Lý Thị Mỹ Duyên', gender: 'female', birthYear: '1999', deathYear: '', birthplace: 'Đà Nẵng', parentId: null, spouseId: 21, note: 'Thiết kế đồ họa.' },
+
+      { id: 23, name: 'Nguyễn Thị Anh', gender: 'female', birthYear: '2001', deathYear: '', birthplace: 'Hà Nội', parentId: 10, spouseId: null, note: 'Sinh viên Y khoa năm cuối.' },
+
+      { id: 24, name: 'Nguyễn Gia Huy', gender: 'male', birthYear: '2005', deathYear: '', birthplace: 'Hà Nội', parentId: 13, spouseId: null, note: 'Học sinh THPT chuyên Toán.' },
+
+      { id: 25, name: 'Nguyễn Minh Khôi', gender: 'male', birthYear: '2003', deathYear: '', birthplace: 'Hà Nội', parentId: 15, spouseId: null, note: 'Sinh viên ĐH Bách Khoa Hà Nội.' },
+      { id: 26, name: 'Nguyễn Thị Khánh Linh', gender: 'female', birthYear: '2007', deathYear: '', birthplace: 'Hà Nội', parentId: 15, spouseId: null, note: 'Học sinh THCS. Giỏi đàn piano.' },
+
+      { id: 27, name: 'Nguyễn Đức Anh', gender: 'male', birthYear: '2008', deathYear: '', birthplace: 'Hà Nội', parentId: 18, spouseId: null, note: 'Học sinh THCS.' },
+      { id: 28, name: 'Nguyễn Thị Bích Ngọc', gender: 'female', birthYear: '2010', deathYear: '', birthplace: 'Hà Nội', parentId: 18, spouseId: null, note: 'Học sinh tiểu học. Năng khiếu vẽ.' },
+
+      // ===== THẾ HỆ 5 - Chắt =====
+      { id: 29, name: 'Nguyễn Gia Bách', gender: 'male', birthYear: '2025', deathYear: '', birthplace: 'Hà Nội', parentId: 21, spouseId: null, note: 'Chắt đầu tiên của dòng họ.' },
+      { id: 30, name: 'Nguyễn Thị An Nhiên', gender: 'female', birthYear: '2026', deathYear: '', birthplace: 'Hà Nội', parentId: 21, spouseId: null, note: '' },
+    ]
+  };
+  saveState();
+  showApp();
+  render();
+  setTimeout(zoomFit, 100);
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ========== INIT ==========
+// Clear old data to load fresh radial design
+localStorage.removeItem('familyTreeState');
+
+function init() {
+  if (loadState() && state.people.length > 0) {
+    showApp();
+    render();
+    setTimeout(zoomFit, 100);
+  } else {
+    loadSample();
+  }
+}
+
+init();
+</script>
+</body>
+</html>
